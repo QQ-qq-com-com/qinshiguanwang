@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>六人窝 · 我们的宿舍</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232FA56F'/%3E%3Cpath d='M18 42V24l14-9 14 9v18' fill='none' stroke='%23fff' stroke-width='5' stroke-linejoin='round'/%3E%3Crect x='26' y='32' width='12' height='10' rx='2' fill='%23FFB13D'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
+<style>
+:root{
+  --bg:#F6FAF4;--surface:#FFFFFF;--green:#2FA56F;--green-dark:#1E7F51;
+  --sky:#4FA9E0;--amber:#FFB13D;--ink:#1E3A2C;--muted:#5A7268;
+  --line:#E3EFE6;--radius:18px;--shadow:0 10px 30px rgba(31,63,44,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Noto Sans SC",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+button,input,textarea{font-family:inherit}
+a{color:inherit;text-decoration:none}
+.container{width:100%;max-width:1120px;margin:0 auto;padding:0 20px}
+.view{display:none}
+.view.active{display:block}
+section{padding:56px 0}
+#view-home{padding:0}
+.page-about,.page-members,.page-memory,.page-contact{padding-top:0}
+.sec-head{text-align:center;max-width:640px;margin:0 auto 36px}
+.sec-kicker{
+  display:inline-block;font-size:13px;font-weight:700;letter-spacing:.14em;
+  color:var(--green-dark);background:rgba(47,165,111,.12);
+  padding:5px 14px;border-radius:999px;margin-bottom:12px;
+}
+.sec-head h2{font-size:28px;font-weight:900;letter-spacing:.01em}
+.sec-head p{color:var(--muted);margin-top:8px;font-size:14.5px}
+.breadcrumb{font-size:13px;color:var(--muted);margin-bottom:18px}
+.breadcrumb a{color:var(--green-dark);font-weight:700}
+.breadcrumb a:hover{text-decoration:underline}
+
+/* ===== 导航 ===== */
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(246,250,244,.88);border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px}
+.logo .mark{width:34px;height:34px;border-radius:10px;background:var(--green);display:grid;place-items:center;color:#fff}
+.logo .mark svg{width:20px;height:20px}
+.nav-links{display:none;gap:6px}
+.nav-links a{padding:8px 14px;border-radius:10px;font-size:14px;font-weight:500;color:var(--muted);transition:.2s}
+.nav-links a:hover{background:rgba(47,165,111,.1);color:var(--green-dark)}
+.nav-links a.cta{background:var(--green);color:#fff;font-weight:700}
+.nav-links a.cta:hover{background:var(--green-dark)}
+.nav-links a.on{color:var(--green-dark);font-weight:900;background:rgba(47,165,111,.1)}
+.menu-btn{display:grid;place-items:center;width:42px;height:42px;border:none;background:none;cursor:pointer}
+.menu-btn svg{width:24px;height:24px;stroke:var(--ink)}
+@media(min-width:768px){.nav-links{display:flex}.menu-btn{display:none}}
+
+/* ===== 页面横幅（子页面顶部） ===== */
+.page-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#E6F3EA,#F7FBF3 55%,#E9F2EE);border-bottom:1px solid var(--line);padding:46px 0 40px}
+.page-hero::before,.page-hero::after{content:"";position:absolute;border-radius:50%}
+.page-hero::before{width:280px;height:280px;right:-90px;top:-120px;background:rgba(47,165,111,.08)}
+.page-hero::after{width:170px;height:170px;left:-60px;bottom:-80px;background:rgba(255,177,61,.1)}
+.page-hero .inner{position:relative;z-index:1}
+.ph-kicker{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.16em;color:var(--green-dark);background:rgba(47,165,111,.12);padding:5px 13px;border-radius:999px;margin-bottom:12px}
+.page-hero h1{font-size:32px;font-weight:900}
+.page-hero p{color:var(--muted);font-size:15px;max-width:560px;margin-top:8px}
+@media(min-width:768px){.page-hero{padding:58px 0 48px}.page-hero h1{font-size:40px}}
+
+/* ===== 首屏 Hero ===== */
+.hero{position:relative;color:#fff;overflow:hidden;display:flex;align-items:center;min-height:78vh}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover}
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(20,70,48,.78),rgba(33,120,84,.45) 60%,rgba(20,70,48,.55))}
+.hero-inner{position:relative;z-index:1;padding-block:80px 96px}
+.hero .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);padding:6px 14px;border-radius:999px;backdrop-filter:blur(6px)}
+.hero .kicker svg{width:14px;height:14px}
+.hero h1{font-size:42px;font-weight:900;line-height:1.15;margin:22px 0 8px}
+.hero h1 .grad{background:linear-gradient(90deg,#FFD77A,#FFB13D);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{font-size:16.5px;max-width:520px;color:rgba(255,255,255,.9)}
+.hero-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:32px 0 0;max-width:520px}
+.hstat{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:16px;padding:14px 16px;backdrop-filter:blur(6px)}
+.hstat b{font-size:26px;font-weight:900;display:block}
+.hstat span{font-size:12.5px;color:rgba(255,255,255,.85)}
+.hero-cta{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;transition:.2s}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--amber);color:#4A2E00}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,177,61,.4)}
+.btn-ghost{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.btn-ghost:hover{background:rgba(255,255,255,.26)}
+@media(min-width:768px){.hero h1{font-size:58px}.hero-stats{grid-template-columns:repeat(4,1fr)}.hero-inner{padding-block:100px 120px}}
+
+/* ===== 关于 ===== */
+.page-about{background:var(--surface);min-height:70vh}
+.about-grid{display:grid;gap:18px;grid-template-columns:1fr}
+.about-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.about-card h3{font-size:18px;font-weight:900;margin:12px 0 6px;display:flex;align-items:center;gap:10px}
+.about-card h3 svg{width:22px;height:22px;color:var(--green)}
+.about-card p{color:var(--muted);font-size:14px}
+.about-ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center}
+.about-ic svg{width:22px;height:22px}
+.about-ic.g{background:rgba(47,165,111,.13);color:var(--green)}
+.about-ic.s{background:rgba(79,169,224,.14);color:var(--sky)}
+.about-ic.a{background:rgba(255,177,61,.16);color:#C77E00}
+@media(min-width:768px){.about-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ===== 关于：宿舍公约 ===== */
+.rules{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:28px 20px;box-shadow:var(--shadow)}
+.rules>h3{text-align:center;font-size:20px;font-weight:900;margin-bottom:4px}
+.rules .rules-sub{text-align:center;font-size:13px;color:var(--muted);margin-bottom:20px}
+.rules-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.rule{display:flex;gap:12px;align-items:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:13px 15px;transition:.2s}
+.rule:hover{border-color:rgba(47,165,111,.4);background:#F2FAF5}
+.rule .num{width:28px;height:28px;border-radius:9px;flex:none;display:grid;place-items:center;background:var(--green);color:#fff;font-size:13px;font-weight:900}
+.rule p{font-size:13.5px;color:var(--ink)}
+.rule small{display:block;font-size:12px;color:var(--muted);margin-top:1px}
+@media(min-width:768px){.rules-grid{grid-template-columns:repeat(2,1fr)}.rules{padding:34px 30px}}
+
+/* ===== 关于：数据条 ===== */
+.stats-band{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:24px}
+.sb{background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border-radius:18px;padding:20px 16px;text-align:center;position:relative;overflow:hidden}
+.sb::after{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);right:-24px;top:-28px}
+.sb b{font-size:28px;font-weight:900;display:block}
+.sb span{font-size:12.5px;opacity:.92}
+@media(min-width:768px){.stats-band{grid-template-columns:repeat(4,1fr)}}
+
+/* ===== CTA 条 ===== */
+.cta-band{background:linear-gradient(120deg,var(--green),#3CBF84);border-radius:22px;color:#fff;text-align:center;padding:36px 24px;margin-top:30px;position:relative;overflow:hidden}
+.cta-band::before,.cta-band::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.1)}
+.cta-band::before{width:160px;height:160px;left:-50px;top:-70px}
+.cta-band::after{width:110px;height:110px;right:-30px;bottom:-50px}
+.cta-band h3{font-size:22px;font-weight:900;position:relative}
+.cta-band p{color:rgba(255,255,255,.88);margin:8px 0 18px;font-size:14px;position:relative}
+.cta-band .btn-primary{position:relative}
+
+/* ===== 成员列表 ===== */
+.page-members{background:var(--bg);min-height:70vh}
+.member-grid{display:grid;grid-template-columns:1fr;gap:20px}
+.mcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.25s;cursor:pointer;display:block}
+.mcard:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:rgba(47,165,111,.4)}
+.mphoto{position:relative;aspect-ratio:1/1;overflow:hidden;background:#EAF3EC}
+.mphoto img{width:100%;height:100%;object-fit:cover;object-position:top;transition:.3s}
+.mcard:hover .mphoto img{transform:scale(1.05)}
+.mphoto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(20,70,48,.28));pointer-events:none}
+.mbadge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);color:var(--green-dark);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px}
+.mcard .enter{position:absolute;bottom:12px;right:12px;background:var(--green);color:#fff;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;opacity:0;transition:.25s;z-index:2}
+.mcard:hover .enter{opacity:1}
+.minfo{padding:16px 18px 20px}
+.minfo .name{font-size:19px;font-weight:900}
+.minfo .role{font-size:12.5px;color:var(--green-dark);font-weight:700;margin-top:2px}
+.minfo .major{font-size:13.5px;color:var(--muted);margin-top:8px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.tag{font-size:12px;font-weight:600;color:var(--muted);background:var(--bg);border:1px solid var(--line);padding:3px 10px;border-radius:999px}
+@media(min-width:640px){.member-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.member-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ===== 成员个人页 ===== */
+.page-member{background:var(--surface);min-height:70vh;padding-top:36px}
+.member-detail{display:grid;grid-template-columns:1fr;gap:0;background:var(--bg);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}
+.md-photo{position:relative;background:#EAF3EC;min-height:320px}
+.md-photo img{width:100%;height:100%;object-fit:cover;object-position:top;position:absolute;inset:0}
+.md-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(20,70,48,.32));pointer-events:none}
+.md-badge{position:absolute;top:16px;left:16px;background:var(--green);color:#fff;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;z-index:2}
+.md-info{padding:26px 22px}
+.md-info .name{font-size:32px;font-weight:900}
+.md-info .role{font-size:15px;color:var(--green-dark);font-weight:700;margin-top:4px}
+.md-info .major{font-size:14px;color:var(--muted);margin-top:8px}
+.md-sig{font-size:16px;font-style:italic;color:var(--ink);border-left:4px solid var(--amber);padding:4px 0 4px 14px;margin:16px 0}
+.md-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.mf{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.mf b{display:block;font-size:13.5px;font-weight:900}
+.mf span{font-size:11.5px;color:var(--muted)}
+.md-bio{color:var(--muted);font-size:14.5px;margin-bottom:16px}
+.md-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn-ghost2{background:var(--surface);color:var(--green-dark);border:1.5px solid var(--green);padding:11px 20px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost2:hover{background:rgba(47,165,111,.08)}
+.others{max-width:760px;margin:32px auto 0}
+.others h4{font-size:17px;font-weight:900;text-align:center;margin-bottom:16px}
+.others-row{display:flex;gap:16px;overflow-x:auto;padding-bottom:10px}
+.oitem{flex:0 0 92px;text-align:center;cursor:pointer}
+.oitem .oimg{width:92px;height:92px;border-radius:50%;overflow:hidden;border:3px solid var(--line);transition:.2s;background:#EAF3EC}
+.oitem .oimg img{width:100%;height:100%;object-fit:cover;object-position:top}
+.oitem.on .oimg{border-color:var(--green)}
+.oitem:hover .oimg{border-color:var(--green)}
+.oitem span{display:block;font-size:12.5px;font-weight:700;margin-top:6px;color:var(--muted)}
+.oitem.on span{color:var(--green-dark)}
+@media(min-width:768px){
+  .member-detail{grid-template-columns:320px 1fr}
+  .md-photo{min-height:auto}
+  .md-info{padding:32px 30px}
+}
+
+/* ===== 回忆 ===== */
+.page-memory{background:var(--surface);min-height:70vh}
+.memory-video{max-width:920px;margin:0 auto}
+.memory-video video{width:100%;border-radius:20px;box-shadow:var(--shadow);border:1px solid var(--line);display:block;background:#0c1f16}
+.mv-cap{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:12px;color:var(--muted);font-size:13.5px}
+.mv-cap svg{width:17px;height:17px;color:var(--green);flex:none}
+.memory-grid{display:grid;grid-template-columns:1fr;gap:18px;max-width:1080px;margin:34px auto 0}
+.mem-item{aspect-ratio:4/3;border-radius:18px;overflow:hidden;position:relative;background:#EAF3EC;border:1px solid var(--line);box-shadow:var(--shadow)}
+.mem-item img{width:100%;height:100%;object-fit:cover;transition:.35s}
+.mem-item:hover img{transform:scale(1.05)}
+.mem-item::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(20,70,48,.34));pointer-events:none}
+.mem-tag{position:absolute;left:14px;bottom:12px;background:rgba(255,255,255,.94);color:var(--green-dark);font-size:12.5px;font-weight:700;padding:4px 12px;border-radius:999px;z-index:2}
+@media(min-width:640px){.memory-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:960px){.memory-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ===== 留言 ===== */
+.page-contact{background:linear-gradient(180deg,var(--bg),#EAF4ED);min-height:70vh}
+.contact-wrap{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
+.contact-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px 22px;box-shadow:var(--shadow)}
+.contact-card h3,.msg-panel h3{font-size:18px;font-weight:900;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.contact-card h3 svg,.msg-panel h3 svg{width:20px;height:20px;color:var(--green)}
+.form-row{margin-bottom:15px}
+.form-row label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.form-row input,.form-row textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;font-family:inherit;background:var(--bg);color:var(--ink);outline:none;transition:.2s}
+.form-row input:focus,.form-row textarea:focus{border-color:var(--green);background:#fff}
+.form-row textarea{resize:vertical;min-height:96px}
+.btn-submit{background:var(--green);color:#fff;width:100%;justify-content:center}
+.btn-submit:hover{background:var(--green-dark)}
+.form-note{text-align:center;font-size:12px;color:var(--muted);margin-top:12px}
+.msg-panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px 22px;box-shadow:var(--shadow)}
+.msg-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px dashed var(--line)}
+.msg-item:last-child{border-bottom:none}
+.mavatar{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:900;font-size:15px}
+.mavatar.g{background:var(--green)}
+.mavatar.s{background:var(--sky)}
+.mavatar.a{background:#E8922C;color:#fff}
+.msg-item .mname{font-size:13.5px;font-weight:900}
+.msg-item .mtime{font-size:12px;color:var(--muted);margin-left:8px;font-weight:400}
+.msg-item p{font-size:13.5px;color:var(--muted);margin-top:3px}
+.contact-info{display:grid;grid-template-columns:1fr;gap:14px;margin-top:24px}
+.ci{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;gap:14px;align-items:center}
+.ci .cic{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;background:rgba(47,165,111,.12);color:var(--green)}
+.ci .cic svg{width:20px;height:20px}
+.ci b{display:block;font-size:14px;font-weight:900}
+.ci span{font-size:12.5px;color:var(--muted)}
+@media(min-width:900px){.contact-wrap{grid-template-columns:1.02fr .98fr}.contact-info{grid-template-columns:repeat(3,1fr)}}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:12px;font-size:14px;opacity:0;transition:.3s;z-index:99;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== 页脚 ===== */
+.footer{background:var(--ink);color:#CFE3D6;padding:38px 0}
+.footer-inner{display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center}
+.footer .fname{font-size:18px;font-weight:900;color:#fff}
+.footer p{font-size:13px;color:#93B0A1}
+.footer .flinks{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;font-size:13px}
+.footer .flinks a{color:#B9D6C6}
+.footer .flinks a:hover{color:#fff}
+@media(min-width:768px){.footer-inner{flex-direction:row;justify-content:space-between;text-align:left}}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="#/home">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V9l6-4 6 4 6-4v11"/><path d="M3 20h18"/><rect x="9" y="13" width="6" height="4"/></svg></span>
+      六人窝
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#/home" data-nav="#/home">首页</a>
+      <a href="#/about" data-nav="#/about">关于我们</a>
+      <a href="#/members" data-nav="members">宿舍成员</a>
+      <a href="#/memory" data-nav="memory">回忆</a>
+      <a href="#/contact" data-nav="contact" class="cta">给宿舍留言</a>
+    </nav>
+    <button class="menu-btn" onclick="toggleMenu()" aria-label="菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</div>
+
+<main>
+<!-- ===== 视图：首页 ===== -->
+<section class="view" id="view-home">
+  <div class="hero">
+    <div class="hero-bg"><img src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/R3NTboddooO0cPx2FbzciDgWnrg" alt="校园宿舍插画背景"></div>
+    <div class="container hero-inner">
+      <span class="kicker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg> 欢迎来到我们的家</span>
+      <h1>六人一间房<br><span class="grad">装下整个青春</span></h1>
+      <p class="sub">这里是 307 号宿舍，六个人、六个梦想、无数个深夜畅谈。一间小小宿舍，是我们大学生活里最温暖的坐标。</p>
+      <div class="hero-stats">
+        <div class="hstat"><b>6</b><span>位室友</span></div>
+        <div class="hstat"><b>1200+</b><span>天朝夕相处</span></div>
+        <div class="hstat"><b>10</b><span>宿舍平均绩点</span></div>
+        <div class="hstat"><b>12</b><span>项回忆</span></div>
+      </div>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#/members">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7-3.5-3.5L12 9 8.5 5.5 5 9z"/><path d="M19 12v9"/></svg>认识每一位室友
+        </a>
+        <a class="btn btn-ghost" href="#/about">关于我们</a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===== 视图：关于我们 ===== -->
+<section class="view page-about" id="view-about">
+  <div class="page-hero">
+    <div class="container inner">
+      <span class="ph-kicker">ABOUT US · 关于我们</span>
+      <h1>一间房，装下六个不同的世界</h1>
+      <p>计算机、新闻、电子、设计、金融、中文——不同的专业与性格，在同一间宿舍里碰撞出奇妙的日常。</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:40px">
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-ic g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>我们是谁</h3>
+        <p>六位来自不同专业的同学，因缘分住进同一间宿舍。计算机、新闻、电子、设计、金融、中文——不同领域的碰撞，让日常充满奇思妙想。</p>
+      </div>
+      <div class="about-card">
+        <div class="about-ic s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4.5v5c0 4.8-3 8.5-7 10-4-1.5-7-5.2-7-10v-5z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>我们的公约</h3>
+        <p>轮流值日、十一点熄灯、零食共享、烦恼共担。宿舍公约写在黑板上，更写在每个人的行动里，成为我们的默契。</p>
+      </div>
+      <div class="about-card">
+        <div class="about-ic a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg></div>
+        <h3>我们的日常</h3>
+        <p>期末一起熬夜刷题、周末集体出游、生日偷偷准备惊喜。平淡的日子因为彼此，被过成了值得纪念的闪光时刻。</p>
+      </div>
+    </div>
+
+    <div class="rules" style="margin-top:26px">
+      <h3>宿舍公约</h3>
+      <p class="rules-sub">写在门背后小黑板上的六条铁律（和无数条默契）</p>
+      <div class="rules-grid">
+        <div class="rule"><span class="num">1</span><div><p>轮流值日</p><small>一三五二四六轮班，周日抓阄，卫生区责任到人。</small></div></div>
+        <div class="rule"><span class="num">2</span><div><p>23:00 熄灯</p><small>熄灯后自觉安静，卧谈会自愿参加、音量自控。</small></div></div>
+        <div class="rule"><span class="num">3</span><div><p>零食共享</p><small>冰箱主权归集体，拆封即默认分享，补给靠自觉。</small></div></div>
+        <div class="rule"><span class="num">4</span><div><p>带宵夜必问</p><small>出校门先问一句“要不要带一份”，是基本礼仪。</small></div></div>
+        <div class="rule"><span class="num">5</span><div><p>考试周互助</p><small>互相喊起床、共享笔记，绝不让任何人掉队。</small></div></div>
+        <div class="rule"><span class="num">6</span><div><p>生日惊喜保密</p><small>全员策划、提前一个月筹备，保密工作由宿舍长负责。</small></div></div>
+        <div class="rule"><span class="num">7</span><div><p>带人先报备</p><small>带朋友回宿舍提前打声招呼，保持基本社交礼仪。</small></div></div>
+        <div class="rule"><span class="num">8</span><div><p>有烦恼先吐槽</p><small>任何心事都可以说，先吐槽、再一起想办法。</small></div></div>
+      </div>
+    </div>
+
+    <div class="stats-band">
+      <div class="sb"><b>6</b><span>位室友</span></div>
+      <div class="sb"><b>1200+</b><span>天朝夕相处</span></div>
+      <div class="sb"><b>10</b><span>宿舍平均绩点</span></div>
+      <div class="sb"><b>12</b><span>项回忆</span></div>
+    </div>
+
+    <div class="cta-band">
+      <h3>想认识我们每一个人？</h3>
+      <p>六位室友，六种性格，点击进入他们的专属主页。</p>
+      <a class="btn btn-primary" href="#/members">认识每一位室友</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：宿舍成员（列表） ===== -->
+<section class="view page-members" id="view-members">
+  <div class="page-hero">
+    <div class="container inner">
+      <span class="ph-kicker">OUR TEAM · 宿舍成员</span>
+      <h1>六个人，六种生活</h1>
+      <p>点击任意一位室友，进入属于他的个人主页。</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:40px">
+    <div class="member-grid" id="memberGrid"><!-- JS 渲染 --></div>
+    <div class="cta-band">
+      <h3>认识完大家，想说点什么？</h3>
+      <p>欢迎在留言簿写下祝福或回忆，307 的每个人都会看到。</p>
+      <a class="btn btn-primary" href="#/contact">给宿舍留言</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：成员个人页 ===== -->
+<section class="view page-member" id="view-member">
+  <div class="container">
+    <div class="breadcrumb"><a href="#/members">宿舍成员</a> › <span id="mdCrumb">个人主页</span></div>
+    <div id="memberContent"><!-- JS 渲染 --></div>
+  </div>
+</section>
+
+<!-- ===== 视图：回忆 ===== -->
+<section class="view page-memory" id="view-memory">
+  <div class="page-hero">
+    <div class="container inner">
+      <span class="ph-kicker">MEMORIES · 回忆</span>
+      <h1>那些闪闪发光的日子</h1>
+      <p>照片和视频会慢慢变旧，但按下快门的那一瞬间，都是我们共同的青春。</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:40px">
+    <div class="memory-video">
+      <video controls preload="metadata" poster="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/AReQbNFtqoUocqxmXGFcTcT9nxc">
+        <source src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/SSHQbBI5UouX53xWFmhcGR8fnde" type="video/mp4">
+        你的浏览器不支持视频播放。
+      </video>
+      <div class="mv-cap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>我们的海边回忆 · 毕业旅行短片</div>
+    </div>
+    <div class="memory-grid">
+      <figure class="mem-item"><img src="图片与视频/初音未来.png" alt="毕业聚餐"><figcaption class="mem-tag">毕业聚餐 · 深夜火锅</figcaption></figure>
+      <figure class="mem-item"><img src="图片与视频/初音未来.png" alt="集体出游"><figcaption class="mem-tag">第一次集体出游</figcaption></figure>
+      <figure class="mem-item"><img src="图片与视频/初音未来.png" alt="一起自习"><figcaption class="mem-tag">期末一起刷题</figcaption></figure>
+      <figure class="mem-item"><img src="图片与视频/初音未来(2).png" alt="生日惊喜"><figcaption class="mem-tag">惊喜生日夜</figcaption></figure>
+      <figure class="mem-item"><img src="图片与视频/初音未来(2).png" alt="毕业合影"><figcaption class="mem-tag">毕业那天</figcaption></figure>
+      <figure class="mem-item"><img src="图片与视频/初音未来(2).png" alt="天台夜聊"><figcaption class="mem-tag">天台卧谈 · 看星星</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 视图：留言 ===== -->
+<section class="view page-contact" id="view-contact">
+  <div class="page-hero">
+    <div class="container inner">
+      <span class="ph-kicker">GUESTBOOK · 留言簿</span>
+      <h1>想对 307 说点什么？</h1>
+      <p>祝福、回忆、吐槽都可以——写下的话，六个人都会看到。</p>
+    </div>
+  </div>
+  <div class="container" style="padding-top:40px">
+    <div class="contact-wrap">
+      <div class="contact-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>写下你的留言</h3>
+        <form onsubmit="submitMsg(event)">
+          <div class="form-row">
+            <label for="name">你的称呼</label>
+            <input id="name" type="text" placeholder="例如：隔壁宿舍的小王" required>
+          </div>
+          <div class="form-row">
+            <label for="msg">留言内容</label>
+            <textarea id="msg" placeholder="写下想说的话…" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-submit">送出留言</button>
+          <div class="form-note">示例页面：留言为演示功能，刷新后不会保存。</div>
+        </form>
+      </div>
+      <div class="msg-panel">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>最近留言</h3>
+        <div class="msg-item">
+          <span class="mavatar g">王</span>
+          <div><span class="mname">隔壁宿舍的小王</span><span class="mtime">2026-09-28</span><p>307 的文化节节目太精彩了，每年都来看！宿舍布置也好看。</p></div>
+        </div>
+        <div class="msg-item">
+          <span class="mavatar s">学</span>
+          <div><span class="mname">大二学妹</span><span class="mtime">2026-09-15</span><p>学长学姐们超级 nice，期末答疑耐心到爆，谢谢你们！</p></div>
+        </div>
+        <div class="msg-item">
+          <span class="mavatar a">某</span>
+          <div><span class="mname">某位不愿透露姓名的室友</span><span class="mtime">2026-08-30</span><p>深夜泡面局，请务必继续传承下去。这是我的温柔提醒。</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-info">
+      <div class="ci">
+        <span class="cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><rect x="9" y="14" width="6" height="6"/></svg></span>
+        <div><b>宿舍坐标</b><span>北苑 11栋 307 室</span></div>
+      </div>
+      <div class="ci">
+        <span class="cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg></span>
+        <div><b>宿舍邮箱</b><span>six-room-307@example.com</span></div>
+      </div>
+      <div class="ci">
+        <span class="cic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+        <div><b>欢迎时间</b><span>每晚 21:00 后的卧谈会大门常开</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+// 成员数据（占位，可替换为真实信息与照片）
+const MEMBERS=[
+  {key:"wu-yun-xin",n:"吴允新",r:"编程担当",m:"移动互联应用技术",
+   t:["熬夜写码"],b:"寝室长",
+   p:"图片与视频/初音未来.png",
+   sig:"把每个 bug 都改成朋友，把每个深夜都过成周末。",
+   bio:"宿舍里的“技术担当”，也是全屋作息最晚的人。负责宿舍的智能门锁、共享盘和一切能自动化的日常。虽然话不多，但每次室友遇到电脑问题，他都是那个默默把问题解决掉的人。",
+   fun:"连续三年在学院编程马拉松拿奖，奖品全部贡献给了宿舍零食柜。"},
+ 
+   {key:"lu-yin-zhong",n:"卢寅中",r:"卢馆担当",m:"移动互联应用技术",
+   t:["卢馆"],b:"寝室成员",
+   p:"图片与视频/卢寅中.png",
+   sig:"🐌👄🩸🦘🐴🍺🐘⛓️🐔🥩",
+   bio:"卢馆高手",
+   fun:"在寝室直播卢馆"},
+  
+   {key:"tu-jia-ji",n:"涂佳吉",r:"爱月担当",m:"移动互联应用技术",
+   t:["电子DIY","篮球","装机"],b:"寝室成员",
+   p:"图片与视频/涂佳吉.png",
+   sig:"卢不断的会让我更加强大",
+   bio:"307第一探花先生",
+   fun:"在寝室直播爱月"},
+  
+   {key:"wang-wen-jie",n:"王文杰",r:"设计担当",m:"移动互联应用技术",
+   t:["手绘","海报","插画"],b:"寝室成员",
+   p:"图片与视频/初音未来(4).png",
+   sig:"世界太吵的时候，就躲进画里安静一会儿。",
+   bio:"宿舍门上的手绘名牌、文化节的海报、每个人的头像，都出自她手。审美在线、笑点也在线，常常一边赶稿一边接室友的梗。是六人里最有艺术气质，也最随性的一个。",
+   fun:"为每位室友画过一张卡通头像，现在都成了大家在各种群里的默认表情包。"},
+  
+   {key:"li-jun-ye",n:"李俊烨",r:"起飞担当",m:"移动互联应用技术",
+   t:["爱起飞"],b:"寝室成员",
+   p:"图片与视频/李俊烨.png",
+   sig:"🐌💊🚬🥧",
+   bio:"最爱起飞之人",
+   fun:"在寝室直播起飞"},
+  
+   {key:"song-yu-chen",n:"宋宇辰",r:"文艺担当",m:"移动互联应用技术",
+   t:["游戏","音乐"],b:"寝室成员",
+   p:"图片与视频/宋宇辰.png",
+   sig:"静观时序，稳步前行。",
+   bio:"持续自学的学习者，性格内敛，偏爱安静观察。喜欢感受四季时序更迭，也乐于钻研各类知识与技术。做事踏实有耐心，待人真诚，同时懂得守住边界。始终相信，成长如同季节轮回，自有节奏，不必追赶旁人。厚积沉淀，稳步前行。",
+   fun:"寝室的文静者，默默的玩游戏、听音乐"},
+];
+
+const views=["home","about","members","member","memory","contact"];
+
+// 渲染成员列表卡片
+function renderMemberGrid(){
+  const grid=document.getElementById("memberGrid");
+  grid.innerHTML=MEMBERS.map(m=>`
+    <a class="mcard" href="#/member/${m.key}">
+      <div class="mphoto"><img src="${m.p}" alt="${m.n}的照片">
+        <span class="mbadge">${m.b}</span>
+        <span class="enter">进入主页 ›</span>
+      </div>
+      <div class="minfo">
+        <div class="name">${m.n}</div>
+        <div class="role">${m.r}</div>
+        <div class="major">${m.m}</div>
+        <div class="tags">${m.t.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+      </div>
+    </a>`).join("");
+}
+
+// 渲染成员个人页
+function renderMember(key){
+  const m=MEMBERS.find(x=>x.key===key);
+  const box=document.getElementById("memberContent");
+  const crumb=document.getElementById("mdCrumb");
+  if(!m){
+    crumb.textContent="未找到";
+    box.innerHTML=`<div class="sec-head"><h2>这位室友还没登记</h2><p><a class="btn btn-ghost2" href="#/members">返回成员列表</a></p></div>`;
+    return;
+  }
+  crumb.textContent=m.n+" 的个人主页";
+  const others=MEMBERS.map(o=>`
+    <div class="oitem ${o.key===key?"on":""}" onclick="location.hash='#/member/${o.key}'" role="link" tabindex="0">
+      <div class="oimg"><img src="${o.p}" alt="${o.n}"></div><span>${o.n}</span>
+    </div>`).join("");
+  box.innerHTML=`
+    <div class="member-detail">
+      <div class="md-photo"><img src="${m.p}" alt="${m.n}的照片"><span class="md-badge">${m.b}</span></div>
+      <div class="md-info">
+        <div class="name">${m.n}</div>
+        <div class="role">${m.r}</div>
+        <div class="major">${m.m}</div>
+        <div class="md-sig">“${m.sig}”</div>
+        <div class="md-facts">
+          <div class="mf"><b>${m.b}</b><span>宿舍担当</span></div>
+          <div class="mf"><b>${m.m}</b><span>所属专业</span></div>
+          <div class="mf"><b>${m.t.length}</b><span>个兴趣爱好</span></div>
+        </div>
+        <div class="md-bio">${m.bio}</div>
+        <div class="md-bio" style="margin-top:12px"><b>宿舍小故事：</b>${m.fun}</div>
+        <div class="tags">${m.t.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+        <div class="md-links">
+          <a class="btn btn-ghost2" href="#/members">‹ 返回成员列表</a>
+          <a class="btn btn-ghost2" href="#/memory">查看回忆</a>
+        </div>
+      </div>
+    </div>
+    <div class="others">
+      <h4>认识其他室友</h4>
+      <div class="others-row">${others}</div>
+    </div>`;
+}
+
+// 路由
+function route(){
+  const hash=location.hash||"#/home";
+  const parts=hash.replace(/^#\//,"").split("/");
+  const name=parts[0]||"home";
+  views.forEach(v=>{
+    const el=document.getElementById("view-"+v);
+    if(el)el.classList.toggle("active", v===name);
+  });
+  document.querySelectorAll(".nav-links a[data-nav]").forEach(a=>{
+    const active=a.dataset.nav===name;
+    a.classList.toggle("on",active && name!=="member");
+  });
+  if(name==="member"){renderMember(parts[1]||MEMBERS[0].key);}
+  window.scrollTo(0,0);
+  const links=document.getElementById("navLinks");
+  if(links.style.display==="flex"){links.style="";}
+}
+window.addEventListener("hashchange",route);
+
+// 初始化
+renderMemberGrid();
+route();
+
+// 移动端菜单
+function toggleMenu(){
+  const links=document.getElementById("navLinks");
+  if(links.style.display==="flex"){links.style="";return;}
+  links.style.display="flex";
+  links.style.flexDirection="column";
+  links.style.background="rgba(246,250,244,.98)";
+  links.style.position="absolute";
+  links.style.top="62px";links.style.left="0";links.style.right="0";
+  links.style.padding="12px 20px 16px";
+}
+
+// 留言演示
+const toast=document.getElementById("toast");
+function showToast(msg){toast.textContent=msg;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),2400)}
+function submitMsg(e){e.preventDefault();showToast("留言已收到，谢谢你的祝福！");e.target.reset();}
+</script>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <div class="fname">六人窝 · 307 宿舍</div>
+      <p>一间房 · 六个人 · 无数个一起长大的夜晚</p>
+    </div>
+    <nav class="flinks">
+      <a href="#/about">关于我们</a>
+      <a href="#/members">宿舍成员</a>
+      <a href="#/memory">回忆</a>
+      <a href="#/contact">给宿舍留言</a>
+    </nav>
+    <p>© 2026 六人窝 · 本站为示例官网，成员信息与照片为占位内容</p>
+  </div>
+</footer>
+
+<div id="toast"></div>
+</body>
+</html>
+
+</main>
+</body>
+</html>
